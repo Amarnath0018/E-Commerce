@@ -2,13 +2,13 @@
 $host = 'localhost';
 $user = 'root';
 $password = '';
-$database = 'my_database';
+$database = 'e_commerce';
 
 // Create connection
-$conn = new mysqli($host, $user, $password, $database);
+$connect = new mysqli($host, $user, $password, $database);
 
 // Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if ($connect->connect_error) {
+    die("Connection failed: " . $connect->connect_error);
 }
 ?>
