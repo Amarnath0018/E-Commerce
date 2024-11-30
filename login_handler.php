@@ -21,19 +21,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['name'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['pagesVisited'] = [];
  
             // Log login event in `user_log` table
             $userId = $user['id'];
             $logSql = "INSERT INTO user_log (user_id) VALUES ('$userId')";
             $logResult = $connect->query($logSql);
+            $_SESSION['session_id'] = $connect->insert_id;
 
-            
-            //  Redirect based on role
-            if ($user['role'] === 'admin') {
-                header("Location: admin_dashboard.php");
-            } else {
-                header("Location: user_dashboard.php");
-            }
+            header("Location: routing_page.php");
             exit;
  
          }else{
