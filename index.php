@@ -35,7 +35,6 @@ $errors = array();
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2)),
                         url('https://source.unsplash.com/1600x900/?abstract,glass');
             background-size: cover;
-            backdrop-filter: blur(8px);
         }
 
         .container {
