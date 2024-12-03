@@ -76,12 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addUserForm'])) {
         }
         .btn-primary {
             border-radius: 5px;
-            background-color: #007bff;
-            border-color: #007bff;
+            background-color: #4e73df !important;
+            border-color: #4e73df;
         }
         .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+            background-color: #007bff !important;
+            border-color: #007bff;
         }
         label {
             font-weight: bold;

@@ -12,13 +12,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : null;
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <!-- Header Section -->
-    <div>
-        <?php
-            include 'header.php';  // Include header
-        ?>
-    </div>
-
     <!-- Role-based Content -->
     <?php if ($role === 'admin'): ?>
         <div>
@@ -39,12 +32,5 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : null;
             ?>
         </div>
     <?php endif; ?>
-    
-    <!-- Footer Section -->
-    <div>
-        <?php
-            include 'footer.php';  // Include footer
-        ?>
-    </div>
 </body>
 </html>

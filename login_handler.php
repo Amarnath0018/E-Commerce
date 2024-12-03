@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
 
      // Validate user credentials
-     $sql="SELECT id, name, email, password, role FROM user_details WHERE name = '$username'";
+     $sql="SELECT id, name, email, password, role FROM user_details WHERE email = '$username'";
      $result = $connect->query($sql);
  
      if ($result->num_rows === 1) {
