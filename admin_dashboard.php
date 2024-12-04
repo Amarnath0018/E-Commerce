@@ -6,165 +6,160 @@ $page_number = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple PHP Routing</title>
 
-    <!-- Custom fonts for this template-->
-    <link href="aasets/icons/font awesome/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="assets/icons/font awesome/css/solid.css" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <style>
-        .hidden {
-            display: none;
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            /* Ensure full height for 100vh calculation */
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            /* Set the desired height */
+        }
+
+        .navigation-div {
+            flex-shrink: 0;
+            /* Prevent shrinking */
+            flex-grow: 0;
+            /* Prevent growing */
+            background-color: lightblue;
+            width: 200px;
+            /* Fixed width for navigation */
+            overflow: auto;
+            /* Prevent overflow */
+        }
+
+        .content-div {
+            display: flex;
+            flex-direction: column;
+            /* Arrange header, router, and footer vertically */
+            flex-grow: 1;
+            /* Allow this container to grow and take remaining space */
+            height: 100%;
+            /* Full height */
+            overflow: hidden;
+            /* Prevent overflow from child elements */
+        }
+
+        .header-div {
+            height: 50px;
+            /* Fixed height for header */
+            background-color: lightcoral;
+            flex-shrink: 0;
+            /* Prevent shrinking */
+            flex-grow: 0;
+            /* Prevent growing */
+        }
+
+        .router-div {
+            flex-grow: 1;
+            /* Take up remaining vertical space */
+            overflow-y: auto;
+            /* Make this area scrollable */
+            background-color: lightgoldenrodyellow;
+        }
+
+        .footer-div {
+            height: 50px;
+            /* Fixed height for footer */
+            background-color: lightseagreen;
+            flex-shrink: 0;
+            /* Prevent shrinking */
+            flex-grow: 0;
+            /* Prevent growing */
+        }
+
+
+        .vertical-nav {
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+            /* Optional: Set width for the nav */
+            border: 1px solid #ccc;
+            /* Optional: Add border for styling */
+            padding: 10px;
+            /* Optional: Add padding */
+        }
+
+        .vertical-nav a {
+            margin: 5px 0;
+            /* Space between links */
+            text-decoration: none;
+            color: #000;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .vertical-nav a:hover {
+            background-color: #f0f0f0;
+            /* Optional: Hover effect */
         }
     </style>
 </head>
-<body id="page-top" style="margin: 0;">
-    <div id="wrapper">
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">Admin</div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Addons
-            </div>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="?page=1">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Users</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="?page=2">
-                    <i class="fa-solid fa-cubes-stacked"></i>
-                    <span>Products</span></a>
-            </li>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="?page=3">
-                    <i class="fa-solid fa-list"></i>
-                    <span>User Logs</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="?page=4">
-                    <i class="fa-brands fa-shopify"></i>
-                    <span>Order Details</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                        <span style="font-size: 48px; color: Dodgerblue;" onclick="window.location.href='logout.php'">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        </span>
-                </nav>
-                
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Page Heading -->
-                        <!-- Div content -->
-                        <div class="<?php echo $page_number === 1 ? '' : 'hidden'; ?>">
-                            <?php
-                                include 'admin/add_user.php';
-                                include 'admin/users.php';
-                            ?>
-                        </div>
-                        <div class="<?php echo $page_number === 2 ? '' : 'hidden'; ?>">
-                            <?php
-                                include 'admin/add_product.php';
-                                include 'common/list_all_product.php';
-                            ?>
-                        </div>
-                        <div class="<?php echo $page_number === 3 ? '' : 'hidden'; ?>">
-                            <?php
-                                include 'admin/logs.php';
-                            ?>
-                        </div>
-                        <div class="<?php echo $page_number === 4 ? '' : 'hidden'; ?>">
-                            <?php
-                                include 'admin/all_order_details.php';
-                            ?>
-                        </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-                <!-- End of Topbar -->
-
-            </div>
-            <!-- End of Main Content -->
-
+<body>
+    <div class="container">
+        <div class="navigation-div">
+            <nav class="vertical-nav">
+                <a href="?page=admin/users">User</a>
+                <a href="?page=common/list_all_product">Products</a>
+                <a href="?module=admin/logs">User Logs</a>
+                <a href="?module=admin/all_order_details">Product Details</a>
+            </nav>
         </div>
-        <!-- End of Content Wrapper -->
-         
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+        <div class="content-div">
+            <div class="header-div">
+                <?php
+                include 'header.php';
+                ?>
+            </div>
+            <div class="router-div">
+                <main>
+                    <?php
+                    // Include pages and modules based on query parameters
+                    if (isset($_GET['page'])) {
+                        $page = $_GET['page'];
+                        $pageFile = "$page.php";
 
+                        if (file_exists($pageFile)) {
+                            include $pageFile;
+                        } else {
+                            echo "Page not found.";
+                        }
+                    } elseif (isset($_GET['module'])) {
+                        $module = $_GET['module'];
+                        $moduleFile = "$module.php";
+
+                        if (file_exists($moduleFile)) {
+                            include $moduleFile;
+                        } else {
+                            echo "Module not found.";
+                        }
+                    } else {
+                        echo "Default page"; // Default page
+                    }
+                    ?>
+                </main>
+            </div>
+            <div class="footer-div">
+                <?php
+                include 'footer.php';
+                ?>
+            </div>
+        </div>
     </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
 
 </body>
 

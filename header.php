@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 // If the user is logged in, show the logout option
 if (isset($_SESSION['user'])) {
     // Log out logic
@@ -31,12 +32,14 @@ $pagesVisited = implode(', ', $_SESSION['pagesVisited']);
             font-family: Arial, sans-serif;
         }
         .header {
-            background-color: #333;
-            color: white;
+            background-color: #3b945e;
+            height:8vh;
+            color: #f2f2f2;
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
         }
         .logo {
             font-size: 24px;
@@ -50,14 +53,21 @@ $pagesVisited = implode(', ', $_SESSION['pagesVisited']);
         .logout i {
             margin-right: 8px;
         }
+        button{
+            background-color: #3b945e;
+            border: none;
+        }
+        i{
+            color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo">My Website</div>
+        <div class="logo">Stock Mangement System</div>
             <div class="logout">
                 <button onclick="window.location.href='logout.php'">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <i class="fa-solid fa-right-from-bracket fa-2xl" style="--fa-animation-duration: 0.5s;"></i>
                 </button>
             </div>
         </div>

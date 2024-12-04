@@ -1,12 +1,55 @@
 <?php
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$database = 'e_commerce';
 
-require_once 'config/db.php';
+// Create connection
+$connect = new mysqli($host, $user, $password, $database);
 
-// Fetch user logs
-$sql = "SELECT user_details.name, user_details.email, user_log.id, user_log.login_time, user_log.logout_time, user_log.pages_visited 
-        FROM user_log
-        INNER JOIN user_details ON user_log.user_id = user_details.id";
-$result = $connect->query($sql);
+// Check connection
+if ($connect->connect_error) {
+    die("Connection failed: " . $connect->connect_error);
+}
+
+// If AJAX request is made, handle it and return JSON data
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $page = isset($_POST['page']) && is_numeric($_POST['page']) ? (int)$_POST['page'] : 1;
+    $records_per_page = isset($_POST['records_per_page']) && is_numeric($_POST['records_per_page']) ? (int)$_POST['records_per_page'] : 10;
+
+    // Calculate the starting point for the query
+    $start_from = ($page - 1) * $records_per_page;
+
+    // Modified SQL query to join user_log and user_details
+    $sql = "SELECT user_details.name, user_details.email, user_log.id, user_log.login_time, user_log.logout_time, user_log.pages_visited
+            FROM user_log
+            INNER JOIN user_details ON user_log.user_id = user_details.id
+            LIMIT $start_from, $records_per_page";
+    $result = $connect->query($sql);
+
+    // Fetch total number of records for pagination
+    $total_sql = "SELECT COUNT(*) FROM user_log INNER JOIN user_details ON user_log.user_id = user_details.id";
+    $total_result = $connect->query($total_sql);
+    $total_rows = $total_result->fetch_row()[0];
+
+    // Calculate total pages
+    $total_pages = ceil($total_rows / $records_per_page);
+
+    // Prepare data to return
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    // Return data as JSON response
+    echo json_encode([
+        'data' => $data,
+        'total_pages' => $total_pages,
+        'current_page' => $page
+    ]);
+    exit; // Exit the script after sending the JSON response
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,202 +58,200 @@ $result = $connect->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Details</title>
+    <title>Pagination with AJAX in One PHP File</title>
     <style>
+        /* Add your styles here */
+        .pagination button {
+            padding: 5px 10px;
+            margin: 5px;
+        }
+
         * {
-            box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
+            padding: 0;
+            margin: 0;
         }
 
         body {
-            font-family: Helvetica;
-            -webkit-font-smoothing: antialiased;
-            background: rgba(71, 147, 227, 1);
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            /* White background */
+            margin: 0;
+            padding: 0;
         }
 
-        h2 {
-            text-align: center;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: white;
-            padding: 30px 0;
-        }
-
-        /* Table Styles */
-
-        .table-wrapper {
-            margin: 10px 70px 70px;
-            box-shadow: 0px 35px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .fl-table {
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: normal;
-            border: none;
+        table {
+            width: 80%;
+            margin: 20px auto;
             border-collapse: collapse;
-            width: 100%;
-            max-width: 100%;
-            white-space: nowrap;
-            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            /* Raised effect shadow */
         }
 
-        .fl-table td,
-        .fl-table th {
+        th,
+        td {
+            padding: 12px 20px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #182628;
+            /* Black */
+            color: #f2f2f2;
+            /* White */
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #65ccb8;
+            /* Light Green */
+            color: #182628;
+            /* Black text */
+        }
+
+        tr:nth-child(even) td {
+            background-color: #57ba98;
+            /* Medium Green for even rows */
+        }
+
+        tr:hover td {
+            background-color: #3b945e;
+            /* Dark Green on hover */
+            color: #f2f2f2;
+            /* White text on hover */
+        }
+
+        tr:hover {
+            cursor: pointer;
+        }
+
+        .caption {
+            font-size: 2em;
+            margin: 0 auto;
+            /* Center the caption horizontally */
+            margin-bottom: 15px;
+            color: #f2f2f2;
+            /* Black */
+            background-color: #65ccb8;
+            /* Light Green */
+            padding: 10px 20px;
             text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            /* Subtle shadow for the caption */
+            text-transform: uppercase;
+            /* Uppercase text for emphasis */
+            width: 50%;
+        }
+
+
+        /* Add a smooth transition effect */
+        td,
+        th {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Container styling for pagination */
+        .pagination-icons {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f2f2f2;
+            /* Black background */
+            padding: 15px;
+            border-radius: 10px;
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+            color: #182628;
+            width: 75%;
+            margin: 0 auto;
+        }
+
+        /* Styling for the records per page label and dropdown */
+        .pagination-icons label {
+            font-size: 1.1em;
+            margin-right: 10px;
+            font-weight: 500;
+            color: #182628;
+            /* White text */
+        }
+
+        .pagination-icons select {
             padding: 8px;
+            background-color: #65ccb8;
+            /* Light Green background */
+            border: 1px solid #57ba98;
+            /* Medium Green border */
+            border-radius: 5px;
+            color: #182628;
+            /* Black text */
+            font-size: 1em;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .fl-table td {
-            border-right: 1px solid #f8f8f8;
-            font-size: 12px;
+        .pagination-icons select:hover {
+            background-color: #57ba98;
+            /* Hover effect with medium green */
+            border-color: #3b945e;
+            /* Darker green border on hover */
+            cursor: pointer;
         }
 
-        .fl-table thead th {
-            color: #ffffff;
-            background: #4e73df !important;
+        /* Styling for pagination buttons */
+        .pagination {
+            display: flex;
+            gap: 10px;
         }
 
-
-        .fl-table thead th:nth-child(odd) {
-            color: #000000 !important;
-            background: #f2f2ff !important;
+        .pagination button {
+            padding: 10px 20px;
+            background-color: #65ccb8;
+            /* Light Green background */
+            border: 1px solid #57ba98;
+            /* Medium Green border */
+            border-radius: 5px;
+            color: #182628;
+            /* Black text */
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
-        .fl-table tr:nth-child(even) {
-            background: #F8F8F8;
+        /* Hover effect for pagination buttons */
+        .pagination button:hover {
+            background-color: #57ba98;
+            /* Medium Green background on hover */
+            border-color: #3b945e;
+            /* Darker green border on hover */
+            transform: translateY(-2px);
+            /* Slight "lift" effect */
         }
 
-        /* Responsive */
+        /* Hover effect for disabled pagination buttons */
+        .pagination button:disabled {
+            background-color: #f2f2f2;
+            color: #c0c0c0;
+            border-color: #ddd;
+            cursor: not-allowed;
+        }
 
-        @media (max-width: 767px) {
-            .fl-table {
-                display: block;
-                width: 100%;
-            }
-
-            .table-wrapper:before {
-                content: "Scroll horizontally >";
-                display: block;
-                text-align: right;
-                font-size: 11px;
-                color: white;
-                padding: 0 0 10px;
-            }
-
-            .fl-table thead,
-            .fl-table tbody,
-            .fl-table thead th {
-                display: block;
-            }
-
-            .fl-table thead th:last-child {
-                border-bottom: none;
-            }
-
-            .fl-table thead {
-                float: left;
-            }
-
-            .fl-table tbody {
-                width: auto;
-                position: relative;
-                overflow-x: auto;
-            }
-
-            .fl-table td,
-            .fl-table th {
-                padding: 20px .625em .625em .625em;
-                height: 60px;
-                vertical-align: middle;
-                box-sizing: border-box;
-                overflow-x: hidden;
-                overflow-y: auto;
-                width: 120px;
-                font-size: 13px;
-                text-overflow: ellipsis;
-            }
-
-            .fl-table thead th {
-                text-align: left;
-                border-bottom: 1px solid #f7f7f9;
-            }
-
-            .fl-table tbody tr {
-                display: table-cell;
-            }
-
-            .fl-table tbody tr:nth-child(odd) {
-                background: none;
-            }
-
-            .fl-table tr:nth-child(even) {
-                background: transparent;
-            }
-
-            .fl-table tr td:nth-child(odd) {
-                background: #F8F8F8;
-                border-right: 1px solid #E6E4E4;
-            }
-
-            .fl-table tr td:nth-child(even) {
-                border-right: 1px solid #E6E4E4;
-            }
-
-            .fl-table tbody td {
-                display: block;
-                text-align: center;
-            }
+        .pagination button:disabled:hover {
+            background-color: #f2f2f2;
+            border-color: #ddd;
         }
     </style>
-    <script>
-        const logsPerPage = 20;
-        let currentLogPage = 1;
-
-        function changeLogPage(logDirection) {
-            currentLogPage += logDirection;
-            displayLogTable();
-        }
-
-        function displayLogTable() {
-            const logTable = document.getElementById("log-table");
-            const logRows = logTable.getElementsById("log-tr");
-            const logStart = (currentLogPage - 1) * logsPerPage + 1;
-            const logEnd = currentLogPage * logsPerPage;
-
-            // Hide all rows first
-            for (let i = 1; i < logRows.length; i++) {
-                logRows[i].style.display = "none";
-            }
-
-            // Show the rows for the current page
-            for (let i = logStart; i <= logEnd; i++) {
-                if (logRows[i]) {
-                    logRows[i].style.display = "";
-                }
-            }
-
-            // Update page number display
-            document.getElementById("page-number").textContent = `Page ${currentLogPage}`;
-
-            // Disable/Enable buttons
-            document.getElementById("prev").disabled = currentLogPage === 1;
-            document.getElementById("next").disabled = logEnd >= logRows.length;
-        }
-
-        // Initialize the table with the first page
-        displayLogTable();
-    </script>
 </head>
 
 <body>
-    <h1 style="text-align: center;">User Logs</h1>
-    <table class="fl-table" id="log-table">
+    <div class="caption">User Log Details</div>
+
+    <!-- Table to display the user data -->
+    <table id="data-table" class="fl-table">
         <thead>
-            <tr id="log-tr">
-                <th>Session Id</th>
+            <tr>
+                <th>Id</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Login Time</th>
@@ -219,26 +260,106 @@ $result = $connect->query($sql);
             </tr>
         </thead>
         <tbody>
-
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr id="log-tr">
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['name']; ?></td>
-                    <td><?php echo $row['email']; ?></td>
-                    <td><?php echo $row['login_time']; ?></td>
-                    <td><?php echo $row['logout_time'] ?? 'Still Active'; ?></td>
-                    <td><?php echo $row['pages_visited'] ?? 'Still Active'; ?></td>
-                </tr>
-            <?php endwhile; ?>
+            <!-- Data rows will be populated here dynamically -->
         </tbody>
     </table>
 
-    <!-- Pagination Controls -->
-    <div id="pagination-controls">
-        <button id="prev" onclick="changeLogPage(-1)">Prev</button>
-        <span id="page-number">Page 1</span>
-        <button id="next" onclick="changeLogPage(1)">Next</button>
+    <div class="pagination-icons">
+        <!-- Records per page dropdown -->
+        <div class="pagination-number">
+            <label for="records_per_page">Records per page: </label>
+            <select id="records_per_page" onchange="loadData()">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+
+        <!-- Pagination buttons -->
+        <div class="pagination">
+            <button id="prev" onclick="changePage('prev')">Prev</button>
+            <button id="next" onclick="changePage('next')">Next</button>
+        </div>
     </div>
+
+    <script>
+        // Store the current page and records per page
+        let currentPage = 1;
+        let recordsPerPage = 10;
+
+        // Function to load data
+        function loadData() {
+            recordsPerPage = document.getElementById('records_per_page').value;
+            fetchData();
+        }
+
+        // Function to fetch data via AJAX
+        function fetchData() {
+            const formData = new FormData();
+            formData.append('page', currentPage);
+            formData.append('records_per_page', recordsPerPage);
+
+            // Make AJAX request to fetch data
+            fetch('admin/logs.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayData(data.data);
+                    updatePagination(data.total_pages, data.current_page);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Function to display data in the table
+        function displayData(data) {
+            const tableBody = document.querySelector('#data-table tbody');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            // Loop through the data and create table rows dynamically
+            data.forEach(row => {
+                const logoutTime = row.logout_time ? row.logout_time : "Still Active";
+                const pagesvisited = row.logout_time ? row.pages_visited : "Still Active";
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td>${row.id}</td>
+            <td>${row.name}</td>
+            <td>${row.email}</td>
+            <td>${row.login_time}</td>
+            <td>${logoutTime}</td>
+            <td>${pagesvisited}</td>
+        `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to update the pagination buttons
+        function updatePagination(totalPages, currentPage) {
+            const prevButton = document.getElementById('prev');
+            const nextButton = document.getElementById('next');
+
+            // Disable buttons if at the start or end of pagination
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+        }
+
+        // Function to change page
+        function changePage(direction) {
+            if (direction === 'prev' && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 'next') {
+                currentPage++;
+            }
+            fetchData();
+        }
+
+        // Initialize the first data load
+        fetchData();
+
+    </script>
+
 </body>
 
 </html>

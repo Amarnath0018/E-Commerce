@@ -29,168 +29,251 @@ $userRole = isset($_SESSION['role']) ? $_SESSION['role'] : '';
     <link rel="stylesheet" href="style.css">
     <title>Product Search</title>
     <style>
-        .search-form {
-            margin-bottom: 20px;
-        }
-
+        /* General reset and font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
         }
 
-        body {
-            background: #F6F9FF;
-            height: 100vh;
+        /* Container for the product listing */
+        .divbody {
             width: 100%;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            color: #434343;
-
-            font-size: 16px;
+            text-align: center;
         }
 
+        /* Header styling */
+        .h1 {
+            color: #65ccb8;
+            /* Light Green */
+            margin-bottom: 20px;
+        }
+
+        /* Search form styling */
+        .search-form {
+            margin-bottom: 30px;
+        }
+
+        .search-form input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #57ba98;
+            /* Medium Green */
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            /* White */
+            color: #182628;
+            /* Black */
+            transition: all 0.3s ease;
+        }
+
+        .search-form input:focus {
+            border-color: #3b945e;
+            /* Dark Green */
+            outline: none;
+            box-shadow: 0 4px 8px rgba(59, 148, 94, 0.5);
+            /* Subtle green glow */
+        }
+
+        .search-form button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #65ccb8;
+            /* Light Green */
+            border: none;
+            border-radius: 5px;
+            color: #182628;
+            /* Black */
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background-color: #3b945e;
+            /* Dark Green */
+            color: #f2f2f2;
+            /* White */
+            transform: translateY(-2px);
+            /* Lift effect */
+        }
+
+        /* Main card container */
         main.cards {
             display: flex;
-            padding: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
         }
 
-        main.cards section.card {
+        /* Individual card styling */
+        section.card {
+            background-color: #f2f2f2;
+            /* White */
+            color: #182628;
+            /* Black */
+            border-radius: 15px;
+            width: 350px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow */
+            transition: all 0.3s ease;
+        }
+
+        section.card:hover {
+            transform: translateY(-5px);
+            /* Lift effect */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            /* Elevated shadow */
+        }
+
+        section.card .icon {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            /* Horizontally center */
             align-items: center;
-            text-align: center;
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            max-height: 468px;
-            margin-left: 32px;
+            height: 250px;
         }
 
-        main.cards section.card:first-child {
-            margin-left: 0;
+        /* Product image styling */
+        section.card .icon img {
+            max-width: 250px;
+            max-height: 250px;
+            width: auto;
+            /* Maintains aspect ratio */
+            height: auto;
+            /* Maintains aspect ratio */
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
         }
 
-        main.cards section.card .icon {
-            width: 64px;
-            height: 64px;
+        /* Product title */
+        section.card h3 {
+            font-size: 1.2rem;
+            color: #3b945e;
+            /* Dark Green */
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        main.cards section.card img {
-            width: 100%;
+        /* Product description */
+        section.card span {
+            font-size: 0.9rem;
+            color: #434343;
+            /* Grayish text */
+            display: block;
+            margin-bottom: 15px;
         }
 
-        main.cards section.card h3 {
-            font-size: 100%;
-            margin: 16px 0;
+        /* Product price and stock info */
+        section.card p {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #182628;
+            /* Black */
         }
 
-        main.cards section.card span {
-            font-weight: 300;
-            max-width: 240px;
-            font-size: 80%;
-            margin-bottom: 16px;
-        }
-
-        main.cards section.card button {
-            padding: 0.5rem 1rem;
-            text-transform: uppercase;
-            border-radius: 32px;
-            border: 0;
+        /* Button styles in card */
+        section.card button {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #65ccb8, #57ba98);
+            /* Gradient green */
+            border: none;
+            border-radius: 25px;
+            color: #f2f2f2;
+            /* White */
             cursor: pointer;
-            font-size: 80%;
-            font-weight: 500;
-            color: #fff;
-            margin-bottom: 16px 0;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
 
-        main.cards section.card.contact button {
-            background: linear-gradient(to right, #9F66FF, #DFCBFF);
+        section.card button:hover {
+            background: linear-gradient(to right, #57ba98, #3b945e);
+            /* Darker gradient on hover */
+            transform: scale(1.05);
+            /* Slight zoom */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            /* Elevated shadow */
         }
 
-        main.cards section.card.shop button {
-            background: linear-gradient(to right, #3E8AFF, #BBDEFF);
-        }
-
-        main.cards section.card.about button {
-            background: linear-gradient(to right, #FE5F8F, #FFC7D9);
-        }
-
-        main.cards section.card.contact {
-            box-shadow: 20px 20px 50px -30px #DBC4FF;
-        }
-
-        main.cards section.card.shop {
-            box-shadow: 20px 20px 50px -30px #AFD6FF;
-        }
-
-        main.cards section.card.about {
-            box-shadow: 20px 20px 50px -30px #FFC1D5;
-        }
-
+        /* Media query for responsive design */
         @media screen and (max-width: 720px) {
             main.cards {
                 flex-direction: column;
+                align-items: center;
             }
 
-            main.cards section.card {
-                margin-left: 0;
-                margin-bottom: 32px;
+            section.card {
+                width: 90%;
+                /* Full width for small screens */
             }
 
-            main.cards section.card:last-child {
-                margin-bottom: 0;
+            .search-form input {
+                width: 80%;
+                /* Adjust search input width */
             }
-
-            main.cards section.card button {
-                font-size: 70%;
-            }
-
         }
     </style>
 </head>
 
 <body>
+    <div class="divbody">
 
-    <h1>Product List</h1>
+        <h1 class="h1">Product List</h1>
 
-    <!-- Search Form -->
-    <form method="POST" class="search-form">
-        <input type="text" name="search" placeholder="Search products..." value="<?php echo htmlspecialchars($searchQuery); ?>">
-        <button type="submit">Search</button>
-    </form>
+        <!-- Search Form -->
+        <form method="POST" class="search-form">
+            <input type="text" name="search" placeholder="Search products..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+            <button type="submit">Search</button>
+        </form>
 
-    <main class="cards">
-        <section class="card contact">
-            <div class="icon">
-                <img src="assets/Chat.png" alt="Contact us.">
-            </div>
-            <h3>Contact us.</h3>
-            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-            <button>Learn More</button>
-        </section>
-        <section class="card shop">
-            <div class="icon">
-                <img src="assets/Bag.png" alt="Shop here.">
-            </div>
-            <h3>Shop here.</h3>
-            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-            <button>Learn More</button>
-        </section>
-        <section class="card about">
-            <div class="icon">
-                <img src="assets/Play.png" alt="About us.">
-            </div>
-            <h3>About us.</h3>
-            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-            <button>Learn More</button>
-        </section>
-    </main>
+        <main class="cards">
+            <?php
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    if ($userRole === 'user') {
+                        echo '<section class="card contact">
+                            <div class="icon">
+                                <img src="' . htmlspecialchars($row['product_image']) . '">
+                            </div>
+                            <h3> ' . htmlspecialchars($row['product_name']) . '</h3>';
+                        echo "<span>" . htmlspecialchars($row['product_description']) . "</span>";
+                        echo "<p><strong>Price: $" . htmlspecialchars($row['rate']) . "</strong></p>";
+                        echo "<p>Stock Available: " . htmlspecialchars($row['stock_count']) . "</p>";
 
+                        // Add to Cart Section
+                        echo "<form method='POST' action='user/add_to_cart.php'>";
+                        echo "<label for='quantity'>Quantity:</label>";
+                        echo "<input type='number' id='quantity' name='quantity' min='1' max='" . $row['stock_count'] . "' value='1'>";
+                        echo "<input type='hidden' name='product_id' value='" . $row['id'] . "'>";
+                        echo "<button type='submit'>Add to Cart</button>";
+                        echo "</form>";
+
+                        echo '</section>';
+                    } else {
+                        echo
+                        '<section class="card contact">
+                            <div class="icon">
+                                <img src="' . htmlspecialchars($row['product_image']) . '">
+                            </div>
+                            <h3> ' . htmlspecialchars($row['product_name']) . '</h3>';
+                        echo "<span>" . htmlspecialchars($row['product_description']) . "</span>";
+                        echo "<p><strong>Price: $" . htmlspecialchars($row['rate']) . "</strong></p>";
+                        echo "<p>Stock Available: " . htmlspecialchars($row['stock_count']) . "</p>";
+                        echo '</section>';
+                    }
+                }
+            } else {
+                echo "<p>No products found.</p>";
+            }
+            ?>
+        </main>
+    </div>
 </body>
 
 </html>

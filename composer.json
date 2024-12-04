@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Phpoffice\\Phpspreadsheet\\": "src/"
+        }
+    },
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.18",
+        "tecnickcom/tcpdf": "^6.7"
+    }
+}
